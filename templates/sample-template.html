@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <title>Report</title>
+</head>
+<body>
+  <h1>Daily Report</h1>
+  <p>Generated: <strong>{{# command }}date{{/ command }}</strong>
+  <p>Uptime: <strong>{{# command }}uptime -p{{/ command }}</strong>
+  <h2>Latest health readings</h2>
+  <pre>
+  {{# command }}
+    tail -n 10 $HOME/ledger/health.log
+  {{/ command }}
+  </pre>
+  <h2>Latest health measurements</h2>
+  <pre>
+  {{# command }}
+    merki -f $HOME/ledger/health.log latest
+  {{/ command }}
+  </pre>
+</body>
+</html>
