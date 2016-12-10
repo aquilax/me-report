@@ -12,13 +12,70 @@
   <h2>Latest health readings</h2>
   <pre>
   {{# command }}
-    tail -n 10 $HOME/ledger/health.log
+    tail $HOME/ledger/health.log | tac
   {{/ command }}
   </pre>
+
+  <table>
+  <tr>
+  <td style="padding-right:1em">
+  <h2>Top expenses for the last 30 days period</h2>
+  <pre>
+  {{# command }}
+    ledger -f $HOME/ledger/sek.ledger --format "%(roundto(amount, 0))\t%(account)\n" -b 'last 30 days' -s --no-total reg ^Раз | sort -nr | head -n 20
+  {{/ command }}
+  </pre>
+  </td>
+  <td style="padding-right:1em">
+
+  <h2>Top expenses for the previous 30 days period</h2>
+  <pre>
+  {{# command }}
+    ledger -f $HOME/ledger/sek.ledger --format "%(roundto(total, 0))\t%(account)\n" -b 'last 60 days' -e 'last 30 days' -s --no-total reg ^Раз | sort -nr | head -n 20
+  {{/ command }}
+  </pre>
+  </td>
+  <td valign="top">
+  <h2>Top level accounts for the last 30 days</h2>
+  <pre>
+  {{# command }}
+    ledger -f $HOME/ledger/sek.ledger -b 'last 30 days' -n --no-total bal
+  {{/ command }}
+  </pre>
+
+  </td>
+  </tr>
+  </table>
+
+
+  <h2>Weight graph</h2>
+  {{# command }}
+    merki -f $HOME/ledger/health.log spark weight
+  {{/ command }}
+
+  <h2>Pushups graph</h2>
+  {{# command }}
+    merki -f $HOME/ledger/health.log spark pushup
+  {{/ command }}
+
   <h2>Latest health measurements</h2>
   <pre>
   {{# command }}
     merki -f $HOME/ledger/health.log latest
+  {{/ command }}
+  </pre>
+
+  <h2>Transaction totals for last two weeks</h2>
+  <pre>
+  {{# command }}
+    ledger -f $HOME/ledger/sek.ledger -b 'last 14 days' -s --no-total bal
+  {{/ command }}
+  </pre>
+
+  <h2>Pending tasks in taskwarrior</h2>
+  <pre>
+  {{# command }}
+    ;task status:pending all
   {{/ command }}
   </pre>
 </body>

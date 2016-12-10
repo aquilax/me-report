@@ -12,6 +12,10 @@ if ($configFileName) {
 
 $commands = array(
     'command' => function($text, Mustache_LambdaHelper $helper) use ($config) {
+        $text = trim($text);
+        if ($text[0] === ';') {
+            return $helper->render(' -- Commented -- ');
+        }
         $command = str_replace($config, array_values($config), $text);
         $output = array();
         exec($command, $output);
