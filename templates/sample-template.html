@@ -4,79 +4,204 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
   <title>Report</title>
+  <style type="text/css">
+      body{font-family: Verdana, Georgia, "Trebuchet MS", Arial, Serif;}
+      .head{text-align: center}
+      h2{font-size:1.8em;border-bottom: 1px solid black}
+      pre{page-break-inside: avoid;}
+  </style>
 </head>
 <body>
-  <h1>Daily Report</h1>
-  <p>Generated: <strong>{{# command }}date{{/ command }}</strong>
-  <p>Uptime: <strong>{{# command }}uptime -p{{/ command }}</strong>
-  <h2>Latest health readings</h2>
+  <div class="head">
+      <h1>Daily Report</h1>
+      <p>Generated: <strong>{{# command }}date{{/ command }}</strong>
+      <p>Uptime: <strong>{{# command }}uptime -p{{/ command }}</strong>
+  </div>
+  <h2>Health</h2>
+
+  <h3>Latest health readings</h3>
   <pre>
   {{# command }}
     tail $HOME/ledger/health.log | tac
   {{/ command }}
   </pre>
 
+  <h3>Weight graph</h3>
+  <div class="chart" data-height="400" data-width="1024" data-type="bar" data-labels="0" data-values="2" data-source="tsv" data-label="Weight">
+  {{# command }}
+    $HOME/gvm/pkgsets/go1.7.1/global/bin/merki -f $HOME/ledger/health.log filter -a -d weight | tail -n 100
+  {{/ command }}
+  </div>
+
+  <h3>Pushups graph</h3>
+  <div class="chart" data-height="400" data-width="1024" data-type="bar" data-labels="0" data-values="2" data-source="tsv" data-label="Weight" data-zero="1">
+  {{# command }}
+    $HOME/gvm/pkgsets/go1.7.1/global/bin/merki -f $HOME/ledger/health.log filter -s -d pushup | tail -n 100
+  {{/ command }}
+  </div>
+
+  <h3>Pulse graph</h3>
+  <div class="chart" data-height="400" data-width="1024" data-type="line" data-labels="0" data-values="2" data-source="tsv" data-label="Weight" data-zero="1">
+  {{# command }}
+    $HOME/gvm/pkgsets/go1.7.1/global/bin/merki -f $HOME/ledger/health.log filter -s -d pulse | tail -n 100
+  {{/ command }}
+  </div>
+
+  <h3>Temperature graph</h3>
+  <div class="chart" data-height="400" data-width="1024" data-type="line" data-labels="0" data-values="2" data-source="tsv" data-label="Weight" data-zero="1">
+  {{# command }}
+    $HOME/gvm/pkgsets/go1.7.1/global/bin/merki -f $HOME/ledger/health.log filter -a -d temp | tail -n 100
+  {{/ command }}
+  </div>
+
+  <h3>Latest drugs taken</h3>
+  <pre>
+  {{# command }}
+    $HOME/gvm/pkgsets/go1.7.1/global/bin/merki -f $HOME/ledger/health.log filter medicine | tail
+  {{/ command }}
+  </pre>
+
+  <h3>Latest health measurements</h4>
+  <pre>
+  {{# command }}
+    $HOME/gvm/pkgsets/go1.7.1/global/bin/merki -f $HOME/ledger/health.log latest
+  {{/ command }}
+  </pre>
+
+
+  <h2>Nutrition</h2>
+  <pre>
+  {{# command }}
+    $HOME/gvm/pkgsets/go1.7.1/global/bin/hranoprovod-cli -d $HOME/ledger/food.yaml -l $HOME/ledger/log.yaml reg --no-color -b #YESTERDAY -e #YESTERDAY
+  {{/ command }}
+  </pre>
+
+  <h2>Finance</h2>
   <table>
-  <tr>
-  <td style="padding-right:1em">
-  <h2>Top expenses for the last 30 days period</h2>
-  <pre>
-  {{# command }}
-    ledger -f $HOME/ledger/sek.ledger --format "%(roundto(amount, 0))\t%(account)\n" -b 'last 30 days' -s --no-total reg ^Раз | sort -nr | head -n 20
-  {{/ command }}
-  </pre>
-  </td>
-  <td style="padding-right:1em">
+      <tr>
+      <td style="padding-right:1em">
+      <h3>Top expenses for the last 30 days period</h3>
+      <pre>
+      {{# command }}
+        ledger -f $HOME/ledger/sek.ledger --format "%(roundto(amount, 0))\t%(account)\n" -b 'last 30 days' -s --no-total reg ^Раз | sort -nr | head -n 20
+      {{/ command }}
+      </pre>
+      </td>
+      <td>
 
-  <h2>Top expenses for the previous 30 days period</h2>
-  <pre>
-  {{# command }}
-    ledger -f $HOME/ledger/sek.ledger --format "%(roundto(total, 0))\t%(account)\n" -b 'last 60 days' -e 'last 30 days' -s --no-total reg ^Раз | sort -nr | head -n 20
-  {{/ command }}
-  </pre>
-  </td>
-  <td valign="top">
-  <h2>Top level accounts for the last 30 days</h2>
-  <pre>
-  {{# command }}
-    ledger -f $HOME/ledger/sek.ledger -b 'last 30 days' -n --no-total bal
-  {{/ command }}
-  </pre>
-
-  </td>
-  </tr>
+      <h3>Top expenses for the previous 30 days period</h3>
+      <pre>
+      {{# command }}
+        ledger -f $HOME/ledger/sek.ledger --format "%(roundto(amount, 0))\t%(account)\n" -b 'last 60 days' -e 'last 30 days' -s --no-total reg ^Раз | sort -nr | head -n 20
+      {{/ command }}
+      </pre>
+      </td>
+      </tr>
+      <tr>
+      <td style="padding-right:1em">
+      <h3>Top level accounts for the last 30 days</h3>
+      <pre>
+      {{# command }}
+        ledger -f $HOME/ledger/sek.ledger -b 'last 30 days' -n --no-total bal
+      {{/ command }}
+      </pre>
+      </td>
+      <td>
+      <h3>Top level accounts for the previous 30 days</h3>
+      <pre>
+      {{# command }}
+        ledger -f $HOME/ledger/sek.ledger -b 'last 60 days' -e 'last 30 days' -n --no-total bal
+      {{/ command }}
+      </pre>
+      </td>
+      </tr>
   </table>
 
-
-  <h2>Weight graph</h2>
-  {{# command }}
-    merki -f $HOME/ledger/health.log spark weight
-  {{/ command }}
-
-  <h2>Pushups graph</h2>
-  {{# command }}
-    merki -f $HOME/ledger/health.log spark pushup
-  {{/ command }}
-
-  <h2>Latest health measurements</h2>
-  <pre>
-  {{# command }}
-    merki -f $HOME/ledger/health.log latest
-  {{/ command }}
-  </pre>
-
-  <h2>Transaction totals for last two weeks</h2>
+  <h3>Transaction totals for last two weeks</h3>
   <pre>
   {{# command }}
     ledger -f $HOME/ledger/sek.ledger -b 'last 14 days' -s --no-total bal
   {{/ command }}
   </pre>
 
-  <h2>Pending tasks in taskwarrior</h2>
+  <h2>GTD</h2>
+  <h3>Pending tasks in taskwarrior</h3>
   <pre>
   {{# command }}
-    ;task status:pending all
+    task next status:pending tag:todo rc.detection:off rc.defaultwidth:184
   {{/ command }}
   </pre>
+
+  <h2>Sites</h2>
+  <h3>Latest site visits</h3>
+  <pre>
+  {{# command }}
+    curl -s http://topsitecounter.appspot.com/text
+  {{/ command }}
+  </pre>
+
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  <script>
+  function getDataSet(type, labelIndex, valueIndex, data) {
+    var result = {
+        labels: [],
+        datasets: [
+            {
+                backgroundColor: '#f00',
+                data: []
+            }
+        ]
+    };
+    var separator = "\t"
+    var rows = data.split("\n");
+    rows.forEach(function(row) {
+        if (row) {
+            var cols = row.split(separator);
+            result['labels'].push(cols[labelIndex]);
+            result['datasets'][0]['data'].push(cols[valueIndex]);
+        }
+    });
+    return result;
+  }
+
+  $(document).ready(function(){
+    $('.chart').each(function(i, chart){
+        var $chart = $(chart);
+
+        $canvas = $('<canvas width="' + $chart.data('width') + '" height="' + $chart.data('height') + '"></canvas>')
+        $chart.after($canvas);
+        var options = {
+                responsive: false,
+                legend: {
+                    display: false
+                },
+                global: {
+                    defaultColor: '#f00'
+                }
+            };
+        if ($chart.data('zero')) {
+            options['scales'] = {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+        new Chart($canvas, {
+            type: $chart.data('type'),
+            data: getDataSet(
+                $chart.data('source'),
+                $chart.data('labels'),
+                $chart.data('values'),
+                $chart.text()),
+            options: options
+        });
+        $chart.hide();
+    });
+  });
+  </script>
 </body>
 </html>
