@@ -15,6 +15,7 @@ $config['#TODAY'] = date('Y/m/d');
 
 $commands = array(
     'command' => function($text, Mustache_LambdaHelper $helper) use ($config) {
+        $startTime = microtime(true);
         $text = trim($text);
         if ($text[0] === ';') {
             return $helper->render(' -- Commented -- ');
@@ -22,6 +23,11 @@ $commands = array(
         $command = str_replace(array_keys($config), $config, $text);
         $output = array();
         exec($command, $output);
+        $endTime = microtime(true);
+        $diff = $endTime - $startTime;
+        $output[] = "<!-- $command -->";
+        $output[] = "<!-- took $diff seconds -->";
+        $output[] = "";
         return $helper->render(implode(PHP_EOL, $output));
     }
 );
