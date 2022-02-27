@@ -12,6 +12,12 @@ if ($configFileName) {
 	$config = json_decode(file_get_contents($configFileName), true);
 }
 
+foreach($_SERVER as $k => $v) {
+    if (str_starts_with($k, 'MY_')) {
+        $config['#' . $k] = $v;
+    }
+}
+
 $config['#YESTERDAY'] = date('Y/m/d', strtotime('yesterday'));
 $config['#TODAY'] = date('Y/m/d');
 
@@ -63,14 +69,30 @@ function getCommandCached($config, $rawCacheTTL = 0) {
     };
 }
 
+function getDisabled() {
+    return function($text, Mustache_LambdaHelper $helper) {
+        $output = array();
+        $output[] = "<!-- $text -->";
+        $output[] = "<!-- DISABLED -->";
+        $output[] = "";
+        return $helper->render(implode(PHP_EOL, $output));
+    };
+}
+
 
 $commands = array(
     'command' => getCommandCached($config),
+    '_command' => getDisabled(),
     'command_cached_1h' => getCommandCached($config, 3600),
+    '_command_cached_1h' => getDisabled(),
     'command_cached_3h' => getCommandCached($config, 10800),
+    '_command_cached_3h' => getDisabled(),
     'command_cached_6h' => getCommandCached($config, 21600),
+    '_command_cached_6h' => getDisabled(),
     'command_cached_12h' => getCommandCached($config, 43200),
+    '_command_cached_12h' => getDisabled(),
     'command_cached_24h' => getCommandCached($config, 86400),
+    '_command_cached_24h' => getDisabled(),
 );
 
 $m = new Mustache_Engine(array(
